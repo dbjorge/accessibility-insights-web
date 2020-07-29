@@ -209,15 +209,13 @@ export abstract class WebExtensionBrowserAdapter
     public addListenerOnPermissionsAdded(
         callback: (permissions: Permissions.Permissions) => void,
     ): void {
-        // casting browser as any due to typings for permissions onAdded not currently supported.
-        (browser as any).permissions.onAdded.addListener(callback);
+        browser.permissions.onAdded.addListener(callback);
     }
 
     public addListenerOnPermissionsRemoved(
         callback: (permissions: Permissions.Permissions) => void,
     ): void {
-        // casting browser as any due to typings for permissions onRemoved not currently supported.
-        (browser as any).permissions.onRemoved.addListener(callback);
+        browser.permissions.onRemoved.addListener(callback);
     }
 
     public containsPermissions(permissions: Permissions.Permissions): Promise<boolean> {

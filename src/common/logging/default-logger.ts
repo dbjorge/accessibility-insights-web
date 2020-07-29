@@ -2,9 +2,14 @@
 // Licensed under the MIT License.
 import { Logger } from './logger';
 
-export const createDefaultLogger = (): Logger => {
+export const createDefaultLogger = (tag?: string): Logger => {
+    const prefix = tag == null ? '' : `[${tag}] `;
     return {
-        log: console.log,
-        error: console.error,
+        log: (message?: any, ...optionalParams: any[]) => {
+            console.log(prefix + message, ...optionalParams);
+        },
+        error: (message?: any, ...optionalParams: any[]) => {
+            console.error(prefix + message, ...optionalParams);
+        },
     };
 };
