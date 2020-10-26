@@ -16,5 +16,6 @@
 - [ ] Added/updated relevant unit test(s) (and ran `yarn test`)
 - [ ] Verified code coverage for the changes made. Check coverage report at: `<rootDir>/test-results/unit/coverage`
 - [ ] PR title *AND* final merge commit title both start with a semantic tag (`fix:`, `chore:`, `feat(feature-name):`, `refactor:`). See `CONTRIBUTING.md`.
+- [ ] Verified that pull-request-recommended checks passed OR that failures are not related to your changes
 - [ ] (UI changes only) Added screenshots/GIFs to description above
 - [ ] (UI changes only) Verified usability with NVDA/JAWS
