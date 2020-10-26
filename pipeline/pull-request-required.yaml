@@ -1,5 +1,8 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
+
+# These represent the CI/PR build steps which must pass before PRs will be allowed to merge.
+
 trigger: # trigger only affects CI builds
     branches:
         include:
@@ -11,8 +14,6 @@ pr: # pr does not trigger CI builds
             - '*' # must quote since "*" is a YAML reserved character; we want a string
 
 variables:
-    windowsImage: 'windows-2019'
-    macImage: 'macOS-10.15'
     linuxImage: 'ubuntu-18.04'
 
 jobs:
@@ -22,7 +23,7 @@ jobs:
           vmImage: $(linuxImage)
 
       steps:
-          - template: pipeline/install-node-prerequisites.yaml
+          - template: ./install-node-prerequisites.yaml
 
           - script: yarn lint:check
             displayName: check lint errors
@@ -76,7 +77,7 @@ jobs:
       pool:
           vmImage: $(linuxImage)
       steps:
-          - template: pipeline/install-node-prerequisites.yaml
+          - template: ./install-node-prerequisites.yaml
 
           - task: ComponentGovernanceComponentDetection@0
             displayName: 'dependency detection (Component Governance)'
@@ -110,7 +111,7 @@ jobs:
       pool:
           vmImage: $(linuxImage)
       steps:
-          - template: pipeline/install-node-prerequisites.yaml
+          - template: ./install-node-prerequisites.yaml
 
           - script: yarn build:package:report
             displayName: build report package
@@ -127,35 +128,3 @@ jobs:
             condition: always()
             displayName: publish test results
             timeoutInMinutes: 3
-
-    - job: 'e2e_web_linux'
-      pool:
-          vmImage: $(linuxImage)
-      steps:
-          - template: pipeline/install-node-prerequisites.yaml
-          - template: pipeline/e2e-test-from-docker.yaml
-          - template: pipeline/e2e-test-publish-results.yaml
-
-    - job: 'e2e_unified_mac'
-      pool:
-          vmImage: $(macImage)
-      steps:
-          - template: pipeline/install-node-prerequisites.yaml
-          - template: pipeline/unified/unified-e2e-test-interactive.yaml
-          - template: pipeline/unified/unified-e2e-publish-results.yaml
-
-    - job: 'e2e_unified_linux'
-      pool:
-          vmImage: $(linuxImage)
-      steps:
-          - template: pipeline/install-node-prerequisites.yaml
-          - template: pipeline/unified/unified-e2e-test-linux.yaml
-          - template: pipeline/unified/unified-e2e-publish-results.yaml
-
-    - job: 'e2e_unified_windows'
-      pool:
-          vmImage: $(windowsImage)
-      steps:
-          - template: pipeline/install-node-prerequisites.yaml
-          - template: pipeline/unified/unified-e2e-test-interactive.yaml
-          - template: pipeline/unified/unified-e2e-publish-results.yaml

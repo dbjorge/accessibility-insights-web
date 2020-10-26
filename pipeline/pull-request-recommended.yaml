@@ -1,0 +1,36 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+# These represent the CI/PR build steps that are required to run and check on before
+# merging PRs, but which are currently unreliable enough that it is acceptable to
+# merge a PR while they are failing if you are confident that all failures are unrelated
+# to your changes.
+
+trigger: # trigger only affects CI builds
+    branches:
+        include:
+            - master
+
+pr: # pr does not trigger CI builds
+    branches:
+        include:
+            - '*' # must quote since "*" is a YAML reserved character; we want a string
+
+variables:
+    linuxImage: 'ubuntu-18.04'
+
+jobs:
+    - job: 'e2e_web_linux'
+      pool:
+          vmImage: $(linuxImage)
+      steps:
+          - template: ./e2e-test-from-docker.yaml
+          - template: ./e2e-test-publish-results.yaml
+
+    - job: 'e2e_unified_linux'
+      pool:
+          vmImage: $(linuxImage)
+      steps:
+          - template: ./install-node-prerequisites.yaml
+          - template: ./unified/unified-e2e-test-linux.yaml
+          - template: ./unified/unified-e2e-publish-results.yaml
