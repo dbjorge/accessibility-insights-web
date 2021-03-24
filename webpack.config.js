@@ -78,6 +78,13 @@ const scssRule = (useHash = true) => ({
 });
 
 const commonConfig = {
+    cache: {
+        type: 'filesystem',
+        cacheDirectory: path.resolve(__dirname, '.webpack_cache'),
+        buildDependencies: {
+            config: [__filename],
+        },
+    },
     entry: commonEntryFiles,
     module: {
         rules: [tsRule, scssRule(true)],

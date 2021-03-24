@@ -10,6 +10,7 @@
 /ref/
 /extension/
 /package/
+/.webpack_cache/
 
 bundle/
 dist/
