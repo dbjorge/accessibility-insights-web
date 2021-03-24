@@ -81,16 +81,32 @@ const commonConfig = {
     module: {
         rules: [tsRule, scssRule(true)],
     },
-    resolve: {
-        // It is important that src is absolute but node_modules is relative. See #2520
-        modules: [path.resolve(__dirname, './src'), 'node_modules'],
-        extensions: ['.tsx', '.ts', '.js'],
+    optimization: {
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    test: /[\\/]node_modules[\\/]/,
+                    name: 'vendor',
+                    enforce: true,
+                    chunks: 'all',
+                },
+            },
+        },
+    },
+    output: {
+        filename: '[name].bundle.js',
+        chunkFilename: '[name].bundle.js',
     },
     plugins: commonPlugins,
     performance: {
         // We allow higher-than-normal sizes because our users only have to do local fetches of our bundles
         maxEntrypointSize: 10 * 1024 * 1024,
         maxAssetSize: 10 * 1024 * 1024,
+    },
+    resolve: {
+        // It is important that src is absolute but node_modules is relative. See #2520
+        modules: [path.resolve(__dirname, './src'), 'node_modules'],
+        extensions: ['.tsx', '.ts', '.js'],
     },
     stats: {
         // This is to suppress noise from mini-css-extract-plugin
@@ -104,17 +120,17 @@ const unifiedConfig = {
     name: 'unified',
     mode: 'development',
     devtool: 'source-map',
+    optimization: {
+        splitChunks: false,
+    },
     output: {
+        ...commonConfig.output,
         path: path.join(__dirname, 'extension/unifiedBundle'),
-        filename: '[name].bundle.js',
     },
     node: {
         ...commonConfig.node,
         __dirname: false,
         __filename: false,
-    },
-    optimization: {
-        splitChunks: false,
     },
     target: 'electron-main',
 };
@@ -130,11 +146,8 @@ const devConfig = {
     mode: 'development',
     devtool: 'eval-source-map',
     output: {
+        ...commonConfig.output,
         path: path.join(__dirname, 'extension/devBundle'),
-        filename: '[name].bundle.js',
-    },
-    optimization: {
-        splitChunks: false,
     },
 };
 
@@ -144,12 +157,12 @@ const prodConfig = {
     mode: 'production',
     devtool: false,
     output: {
+        ...commonConfig.output,
         path: path.join(__dirname, 'extension/prodBundle'),
-        filename: '[name].bundle.js',
         pathinfo: false,
     },
     optimization: {
-        splitChunks: false,
+        ...commonConfig.optimization,
         minimizer: [
             new TerserWebpackPlugin({
                 terserOptions: {

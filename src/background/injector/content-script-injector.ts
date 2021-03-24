@@ -6,7 +6,10 @@ import { PromiseFactory } from 'common/promises/promise-factory';
 import { flatten } from 'lodash';
 
 export class ContentScriptInjector {
-    public static readonly jsFiles: string[] = ['/bundle/injected.bundle.js'];
+    public static readonly jsFiles: string[] = [
+        '/bundle/vendor.bundle.js',
+        '/bundle/injected.bundle.js',
+    ];
 
     public static readonly cssFiles: string[] = [
         '/injected/styles/default/injected.css',
@@ -35,11 +38,13 @@ export class ContentScriptInjector {
         ContentScriptInjector.cssFiles.forEach(file => this.injectCssFile(tabId, file));
     }
 
-    private injectJsFilesInOrder(tabId: number): Promise<any[]> {
-        const files = ContentScriptInjector.jsFiles;
-        return Promise.all(files.map(file => this.injectJsFile(tabId, file))).then(results =>
-            flatten(results),
-        );
+    private async injectJsFilesInOrder(tabId: number): Promise<any[]> {
+        const allResults = [];
+        for (const file of ContentScriptInjector.jsFiles) {
+            const results = await this.injectJsFile(tabId, file);
+            allResults.push(...flatten(results));
+        }
+        return allResults;
     }
 
     private injectJsFile(tabId: number, file: string): Promise<any[]> {
