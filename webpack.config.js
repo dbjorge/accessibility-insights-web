@@ -37,6 +37,7 @@ const electronEntryFiles = {
 
 const tsRule = {
     test: /\.tsx?$/,
+    include: path.resolve(__dirname, 'src'),
     use: [
         {
             loader: 'ts-loader',
@@ -46,11 +47,11 @@ const tsRule = {
             },
         },
     ],
-    exclude: ['/node_modules/'],
 };
 
 const scssRule = (useHash = true) => ({
     test: /\.scss$/,
+    include: path.resolve(__dirname, 'src'),
     use: [
         {
             loader: MiniCssExtractPlugin.loader,
