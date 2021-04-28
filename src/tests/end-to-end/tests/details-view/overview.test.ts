@@ -40,24 +40,34 @@ describe('Details View -> Overview Page', () => {
         },
     );
 
-    // This test doesn't currently handle the "ruleset changed between save and load" case;
-    // temporarily skipping it until that support is added in a later PR.
-    it.skip('should load assessment with upload of valid a11yassessment file', async () => {
-        await backgroundPage.enableFeatureFlag('saveAndLoadAssessment');
-        await overviewPage.setFileForUpload(
-            './src/tests/end-to-end/test-resources/saved-assessment-files/saved_assessment_test_file.a11ywebassessment',
-        );
-        await overviewPage.clickSelector(overviewSelectors.loadAssessmentButton);
+    it.each`
+        file                                                  | expectedSummaryLabel                      | expectedAutomatedChecksCounts
+        ${'web@2.25.0-valid-mixed-results.a11ywebassessment'} | ${'3% Passed, 97% Incomplete, 0% Failed'} | ${['54 Incomplete']}
+        ${'web@2.26.0-valid-mixed-results.a11ywebassessment'} | ${'6% Passed, 93% Incomplete, 1% Failed'} | ${['50 Passed', '4 Failed']}
+    `(
+        'should display pinned results when loading $file',
+        async ({ file, expectedSummaryLabel, expectedAutomatedChecksCounts }) => {
+            await backgroundPage.enableFeatureFlag('saveAndLoadAssessment');
+            await overviewPage.setFileForUpload(
+                `${__dirname}/../../test-resources/saved-assessment-files/${file}`,
+            );
+            await overviewPage.clickSelector(overviewSelectors.loadAssessmentButton);
 
-        await overviewPage.waitForSelector(overviewSelectors.outcomeChipFail);
+            const summaryBar = await overviewPage.waitForSelector(
+                overviewSelectors.loadedOutcomeSummaryBar,
+            );
+            const summaryLabel = await summaryBar.getAttribute('aria-label');
+            expect(summaryLabel).toBe(expectedSummaryLabel);
 
-        const summaryBar = await overviewPage.getSelectorElement(
-            overviewSelectors.outcomeSummaryBar,
-        );
-        const label = await summaryBar.evaluate(element => element.getAttribute('aria-label'));
-
-        expect(parseInt(label.charAt(0))).toBeGreaterThan(0);
-    });
+            const automatedChecksOutcomeChips = await overviewPage.getSelectorElements(
+                overviewSelectors.testOutcomeChips('Automated checks'),
+            );
+            const automatedChecksOutcomeTitles = await Promise.all(
+                automatedChecksOutcomeChips.map(async chip => await chip.getAttribute('title')),
+            );
+            expect(automatedChecksOutcomeTitles).toStrictEqual(expectedAutomatedChecksCounts);
+        },
+    );
 });
 
 async function openOverviewPage(
