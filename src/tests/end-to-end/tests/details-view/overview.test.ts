@@ -53,12 +53,12 @@ describe('Details View -> Overview Page', () => {
             );
             await overviewPage.clickSelector(overviewSelectors.loadAssessmentButton);
 
-            const summaryBar = await overviewPage.waitForSelector(
-                overviewSelectors.loadedOutcomeSummaryBar,
-            );
-            const summaryLabel = await summaryBar.getAttribute('aria-label');
-            expect(summaryLabel).toBe(expectedSummaryLabel);
+            // Verify the summary bar counts
+            const expectedSummaryBarSelector =
+                overviewSelectors.outcomeSummaryBar + `[aria-label="${expectedSummaryLabel}"]`;
+            await overviewPage.waitForSelector(expectedSummaryBarSelector);
 
+            // Verify the "Automated checks" counts
             const automatedChecksOutcomeChips = await overviewPage.getSelectorElements(
                 overviewSelectors.testOutcomeChips('Automated checks'),
             );

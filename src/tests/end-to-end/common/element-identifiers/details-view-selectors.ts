@@ -74,9 +74,6 @@ export const overviewSelectors = {
     overviewHeading: getAutomationIdSelector(overviewHeadingAutomationId),
     loadAssessmentButton: getAutomationIdSelector(loadAssessmentButtonAutomationId),
     outcomeSummaryBar: getAutomationIdSelector(outcomeSummaryBarAutomationId),
-    loadedOutcomeSummaryBar: `${getAutomationIdSelector(
-        outcomeSummaryBarAutomationId,
-    )}:not([aria-label="0% Passed, 100% Incomplete, 0% Failed"])`,
     testOutcomeChips: (testName: string) =>
         getAutomationIdSelector(testSummaryStatusAutomationId(testName)) + ' .outcome-chip',
 };
