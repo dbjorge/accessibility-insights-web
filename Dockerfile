@@ -13,7 +13,7 @@ USER root
 # environments and a workaround for https://github.com/nodejs/node/issues/39019
 RUN apt-get update && apt-get install -y curl && \
   curl -fsSL https://deb.nodesource.com/setup_14.x | bash - && \
-  apt-get install -y --allow-downgrades nodejs=14.17.1* && \
+  apt-get install -y --allow-downgrades nodejs=14.17.2* && \
   rm -rf /var/lib/apt/lists/*
 
 RUN npm install -g yarn@1.22.10
